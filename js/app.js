@@ -1,3 +1,5 @@
+import { startLogin } from "../modules/access/login.js";
+
 const terminal = document.getElementById("terminal");
 
 let applicationCommand = "";
