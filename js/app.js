@@ -9,18 +9,19 @@ function renderMVSM() {
     terminal.innerHTML = `
 <div class="terminal-screen">
 
-<div class="terminal-content"><span class="terminal-white">IIIIII                         (MVSM)
-  II
-  II
-  II
-  II     N   N  FFFFF   OOO   RRRR    M   M    AAA    TTTTT   IIIII   CCC
-  II     NN  N  F      O   O  R   R   MM MM   A   A     T       I    C
-  II     N N N  FFFF   O   O  RRRR    M M M   AAAAA     T       I    C
-  II     N  NN  F      O   O  R  R    M   M   A   A     T       I    C
-IIIIII   N   N  F       OOO   R   R   M   M   A   A     T     IIIII   CCC
+<div class="terminal-content"><span class="terminal-white"> 
+                        IIIIII                               (MVSM)
+                          II
+                          II
+                          II
+                          II     N   N  FFFFF   OOO   RRRR    M   M    AAA    TTTTT   IIIII   CCCC  AAAAAA
+                          II     NN  N  F      O   O  R   R   MM MM   A   A     T       I    C      A    A
+                          II     N N N  FFFF   O   O  RRRR    M M M   AAAAA     T       I    C      AAAAAA
+                          II     N  NN  F      O   O  R  R    M   M   A   A     T       I    C      A    A 
+                        IIIIII   N   N  F       OOO   R   R   M   M   A   A     T     IIIII   CCCC  A    A
 
 
-      "Ambiente de producao - BRADESCARD / MEXICO - Nucleo Alphaville"</span>
+                                 "Ambiente de producao - BRADESCARD / MEXICO - Nucleo Alphaville"</span>
 
 
         <span class="terminal-cyan">TMCICM</span>                    <span class="terminal-cyan">TMNVSM</span>                    <span class="terminal-cyan">CICSMPT1</span>
@@ -138,7 +139,7 @@ function showLoadingScreen() {
 <div class="terminal-content">
 
 <span class="terminal-green">
-DFHCE3549 Sign-on initialization...
+DFHCE3549 Initializing CICS sign-on...
 </span>
 
 </div>
@@ -153,31 +154,62 @@ DFHCE3549 Sign-on initialization...
 `;
 
     /*
-     * Simulamos el cambio de pantalla.
-     * En el siguiente módulo esto llamará
-     * realmente al router del sistema.
+     * Desconectamos MVSM.
+     * A partir de aquí login.js controla
+     * el teclado.
      */
+
+    terminal.removeEventListener(
+        "keydown",
+        handleKeyboard
+    );
 
     setTimeout(() => {
 
-        terminal.innerHTML = `
+        startLogin({
+            terminal,
+
+            onSuccess: (user) => {
+
+                /*
+                 * BLOQUE 3
+                 *
+                 * Aquí conectaremos ASRS.
+                 */
+
+                showASRSPlaceholder(user);
+            }
+        });
+
+    }, 450);
+}
+
+function showASRSPlaceholder(user) {
+
+    terminal.innerHTML = `
 <div class="terminal-screen">
 
 <div class="terminal-content">
 
 <span class="terminal-cyan">
-SIGNON TO CICS
+ASRS (     )
+            IBI SERVICES MEXICO " MPT1 "
+            ASM STATUS SETTING
 </span>
 
 
 <span class="terminal-green">
-CICSMPT1 CARGADO CORRECTAMENTE
+USER: ${escapeHTML(user.userid)}
 </span>
 
 
 <span class="terminal-white">
-SIGUIENTE MÓDULO:
-SIGNON / USERID / PASSWORD
+ASRS CARGADO CORRECTAMENTE
+</span>
+
+<span class="terminal-green">
+SIGUIENTE BLOQUE:
+CURRENT STATUS ( A )
 </span>
 
 </div>
@@ -185,13 +217,11 @@ SIGNON / USERID / PASSWORD
 <div class="terminal-status">
     <span>T▮</span>
     <span>»</span>
-    <span>0   1,5   A</span>
+    <span>0   8,27   A</span>
 </div>
 
 </div>
 `;
-
-    }, 650);
 }
 
 function escapeHTML(value) {
