@@ -140,3 +140,43 @@
 .terminal-status-right {
     white-space: pre;
 }
+
+/* ========================================
+   CICS SIGNON
+======================================== */
+
+.login-header {
+    width: 100%;
+
+    display: flex;
+    justify-content: center;
+
+    position: relative;
+
+    margin-bottom: 14px;
+}
+
+.login-header .terminal-green {
+    position: absolute;
+    right: 0;
+}
+
+.login-footer-message {
+    display: flex;
+    flex-direction: column;
+
+    margin-bottom: 5px;
+}
+
+.login-footer-message span {
+    display: block;
+}
+
+.terminal-field {
+    padding: 0 2px;
+}
+
+.terminal-field.active {
+    outline: 1px solid #ffff00;
+    border-bottom: 1px solid #ffff00;
+}
