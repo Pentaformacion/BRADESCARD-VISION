@@ -10,23 +10,22 @@ function renderMVSM() {
 <div class="terminal-screen">
 
 <div class="terminal-content"><span class="terminal-white"> 
-                        IIIIII                               (MVSM)
-                          II
-                          II
-                          II
-                          II     N   N  FFFFF   OOO   RRRR    M   M    AAA    TTTTT   IIIII   CCCC  AAAAAA
-                          II     NN  N  F      O   O  R   R   MM MM   A   A     T       I    C      A    A
-                          II     N N N  FFFF   O   O  RRRR    M M M   AAAAA     T       I    C      AAAAAA
-                          II     N  NN  F      O   O  R  R    M   M   A   A     T       I    C      A    A 
-                        IIIIII   N   N  F       OOO   R   R   M   M   A   A     T     IIIII   CCCC  A    A
+                   IIIIII                               (MVSM)
+                     II
+                     II
+                     II
+                     II     N   N  FFFFF   OOO   RRRR    M   M    AAA    TTTTT   IIIII   CCCC  AAAAAA
+                     II     NN  N  F      O   O  R   R   MM MM   A   A     T       I    C      A    A
+                     II     N N N  FFFF   O   O  RRRR    M M M   AAAAA     T       I    C      AAAAAA
+                     II     N  NN  F      O   O  R  R    M   M   A   A     T       I    C      A    A 
+                   IIIIII   N   N  F       OOO   R   R   M   M   A   A     T     IIIII   CCCC  A    A
 
 
                                  "Ambiente de producao - BRADESCARD / MEXICO - Nucleo Alphaville"</span>
 
 
-        <span class="terminal-cyan">TMCICM</span>                    <span class="terminal-cyan">TMNVSM</span>                    <span class="terminal-cyan">CICSMPT1</span>
-        <span class="terminal-cyan">TPXM</span>                      <span class="terminal-cyan">TSOM</span>                      <span class="terminal-cyan">ROSCOM</span>
-        <span class="terminal-cyan">VIEWM</span>                     <span class="terminal-cyan">DLM</span>
+                     <span class="terminal-cyan">TMCICM</span>                    <span class="terminal-cyan">TMNVSM</span>                    <span class="terminal-cyan">CICSMPT1</span><span class="terminal-cyan">TPXM</span>                      <span class="terminal-cyan">TSOM</span>                      <span class="terminal-cyan">ROSCOM</span>
+                     <span class="terminal-cyan">VIEWM</span>                     <span class="terminal-cyan">DLM</span>
 
 
                     <span class="terminal-cyan">APLICACAO:</span>  <span id="applicationField" class="terminal-field active">${escapeHTML(applicationCommand)}</span><span class="terminal-cursor"></span>
