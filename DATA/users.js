@@ -19,13 +19,21 @@ export const trainingUsers = [
     }
 ];
 
-export function validateTrainingUser(userid, password) {
+
+export function validateTrainingUser(
+    userid,
+    password
+) {
 
     const normalizedUser =
-        userid.trim().toUpperCase();
+        String(userid)
+            .trim()
+            .toUpperCase();
 
-    return trainingUsers.find(user =>
-        user.userid === normalizedUser &&
-        user.password === password
-    ) || null;
+    return (
+        trainingUsers.find(user =>
+            user.userid === normalizedUser &&
+            user.password === password
+        ) || null
+    );
 }
