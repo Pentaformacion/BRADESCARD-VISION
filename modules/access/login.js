@@ -1,27 +1,15 @@
 import { validateTrainingUser } from "../../data/users.js";
 
-let userid = "";
-let password = "";
+export function startLogin({ terminal, onSuccess }) {
 
-let activeField = "userid";
-
-let errorMessage = "";
-
-export function startLogin({
-    terminal,
-    onSuccess
-}) {
-
-    userid = "";
-    password = "";
-
-    activeField = "userid";
-    errorMessage = "";
+    let userid = "";
+    let password = "";
+    let activeField = "userid";
+    let errorMessage = "";
 
     function render() {
 
-        const hiddenPassword =
-            "*".repeat(password.length);
+        const hiddenPassword = "*".repeat(password.length);
 
         terminal.innerHTML = `
 <div class="terminal-screen">
@@ -39,8 +27,12 @@ export function startLogin({
 <span class="terminal-green">Type your userid and password, then press ENTER:</span>
 
 
-<span class="terminal-green">        Userid . . . .</span> <span class="terminal-field ${activeField === "userid" ? "active" : ""}">${escapeHTML(userid)}${activeField === "userid" ? '<span class="terminal-cursor"></span>' : ""}</span>
-<span class="terminal-green">        Password . . .</span> <span class="terminal-field ${activeField === "password" ? "active" : ""}">${hiddenPassword}${activeField === "password" ? '<span class="terminal-cursor"></span>' : ""}</span>
+<span class="terminal-green">        Userid . . . .</span>
+<span class="terminal-field ${activeField === "userid" ? "active" : ""}">${escapeHTML(userid)}${activeField === "userid" ? '<span class="terminal-cursor"></span>' : ""}</span>
+
+<span class="terminal-green">        Password . . .</span>
+<span class="terminal-field ${activeField === "password" ? "active" : ""}">${hiddenPassword}${activeField === "password" ? '<span class="terminal-cursor"></span>' : ""}</span>
+
 <span class="terminal-green">        Language . . .</span> _
 <span class="terminal-green">        New Password .</span> _
 
@@ -52,13 +44,7 @@ ${errorMessage
 </div>
 
 <div class="login-footer-message">
-    <span class="terminal-red">
-DFHCE3520 Please type your userid.
-    </span>
-
-    <span class="terminal-cyan">
-F3=Exit
-    </span>
+    <span class="terminal-cyan">F3=Exit</span>
 </div>
 
 <div class="terminal-status">
@@ -73,87 +59,68 @@ F3=Exit
         terminal.focus();
     }
 
+
     function keyboard(event) {
 
         if (
             event.key === "Enter" ||
             event.key === "Backspace" ||
-            event.key === "Tab"
+            event.key === "Tab" ||
+            event.key === "ArrowDown" ||
+            event.key === "ArrowUp"
         ) {
             event.preventDefault();
         }
 
-        if (event.key === "Tab") {
 
-            activeField =
-                activeField === "userid"
-                    ? "password"
-                    : "userid";
-
-            render();
-            return;
-        }
-
-        if (event.key === "ArrowDown") {
-
+        if (
+            event.key === "Tab" ||
+            event.key === "ArrowDown"
+        ) {
             activeField = "password";
-
             render();
             return;
         }
+
 
         if (event.key === "ArrowUp") {
-
             activeField = "userid";
-
             render();
             return;
         }
+
 
         if (event.key === "Backspace") {
 
             if (activeField === "userid") {
-
-                userid =
-                    userid.slice(0, -1);
-
+                userid = userid.slice(0, -1);
             } else {
-
-                password =
-                    password.slice(0, -1);
+                password = password.slice(0, -1);
             }
 
             errorMessage = "";
 
             render();
-
             return;
         }
 
-        if (event.key === "Enter") {
 
-            /*
-             * Si todavía estamos escribiendo
-             * el usuario, ENTER pasa a password.
-             */
+        if (event.key === "Enter") {
 
             if (
                 activeField === "userid" &&
                 userid.length > 0 &&
                 password.length === 0
             ) {
-
                 activeField = "password";
-
                 render();
-
                 return;
             }
 
             validate();
-
             return;
         }
+
 
         if (
             event.key.length === 1 &&
@@ -165,15 +132,12 @@ F3=Exit
             if (activeField === "userid") {
 
                 if (userid.length < 12) {
-
-                    userid +=
-                        event.key.toUpperCase();
+                    userid += event.key.toUpperCase();
                 }
 
             } else {
 
                 if (password.length < 16) {
-
                     password += event.key;
                 }
             }
@@ -183,6 +147,7 @@ F3=Exit
             render();
         }
     }
+
 
     function validate() {
 
@@ -194,9 +159,9 @@ F3=Exit
             activeField = "userid";
 
             render();
-
             return;
         }
+
 
         if (!password) {
 
@@ -206,15 +171,13 @@ F3=Exit
             activeField = "password";
 
             render();
-
             return;
         }
 
+
         const user =
-            validateTrainingUser(
-                userid,
-                password
-            );
+            validateTrainingUser(userid, password);
+
 
         if (!user) {
 
@@ -225,119 +188,42 @@ F3=Exit
             activeField = "password";
 
             render();
-
             return;
         }
+
 
         terminal.removeEventListener(
             "keydown",
             keyboard
         );
 
-        showSuccessfulSignon(user);
+        startASRSCommand(user);
     }
 
-    function showSuccessfulSignon(user) {
 
-        terminal.innerHTML = `
-<div class="terminal-screen">
-
-<div class="terminal-content">
-<span class="terminal-green">TSS7000I ${escapeHTML(user.userid)} Last-Used 01 Oct 2026  System=MVSM Facility=CICSMPT1</span>
-<span class="terminal-green">TSS7001I Count=00001 Mode=Fail Locktime=None Name=${escapeHTML(user.name)}</span>
-
-
-<span class="terminal-green terminal-cursor"></span>
-</div>
-
-<div class="terminal-status">
-    <span>T▮     X SYSTEM</span>
-    <span>»</span>
-    <span>0   1,2   A</span>
-</div>
-
-</div>
-`;
-
-        /*
-         * Esta pantalla ahora espera ASRS.
-         */
+    function startASRSCommand(user) {
 
         let command = "";
+        let commandError = "";
 
-        function commandKeyboard(event) {
 
-            if (
-                event.key === "Enter" ||
-                event.key === "Backspace"
-            ) {
-                event.preventDefault();
-            }
-
-            if (event.key === "Backspace") {
-
-                command =
-                    command.slice(0, -1);
-
-                renderCommand();
-
-                return;
-            }
-
-            if (event.key === "Enter") {
-
-                if (
-                    command
-                        .trim()
-                        .toUpperCase() === "ASRS"
-                ) {
-
-                    terminal.removeEventListener(
-                        "keydown",
-                        commandKeyboard
-                    );
-
-                    onSuccess(user);
-
-                    return;
-                }
-
-                command = "";
-
-                renderCommand(
-                    "INVALID TRANSACTION"
-                );
-
-                return;
-            }
-
-            if (
-                event.key.length === 1 &&
-                command.length < 8
-            ) {
-
-                command +=
-                    event.key.toUpperCase();
-
-                renderCommand();
-            }
-        }
-
-        function renderCommand(error = "") {
+        function renderCommand() {
 
             terminal.innerHTML = `
 <div class="terminal-screen">
 
 <div class="terminal-content">
-<span class="terminal-green">TSS7000I ${escapeHTML(user.userid)} Last-Used 01 Oct 2026  System=MVSM Facility=CICSMPT1</span>
+
+<span class="terminal-green">TSS7000I ${escapeHTML(user.userid)} Last-Used 01 Oct 2026 System=MVSM Facility=CICSMPT1</span>
 <span class="terminal-green">TSS7001I Count=00001 Mode=Fail Locktime=None Name=${escapeHTML(user.name)}</span>
 
 
 <span class="terminal-green">${escapeHTML(command)}</span><span class="terminal-cursor"></span>
 
-${error
-    ? `<span class="terminal-red">${error}</span>`
+${commandError
+    ? `<span class="terminal-red">${escapeHTML(commandError)}</span>`
     : ""}
+
 </div>
 
 <div class="terminal-status">
@@ -352,6 +238,75 @@ ${error
             terminal.focus();
         }
 
+
+        function commandKeyboard(event) {
+
+            if (
+                event.key === "Enter" ||
+                event.key === "Backspace"
+            ) {
+                event.preventDefault();
+            }
+
+
+            if (event.key === "Backspace") {
+
+                command =
+                    command.slice(0, -1);
+
+                commandError = "";
+
+                renderCommand();
+                return;
+            }
+
+
+            if (event.key === "Enter") {
+
+                if (
+                    command.trim().toUpperCase()
+                    === "ASRS"
+                ) {
+
+                    terminal.removeEventListener(
+                        "keydown",
+                        commandKeyboard
+                    );
+
+                    onSuccess(user);
+
+                    return;
+                }
+
+
+                command = "";
+                commandError =
+                    "TRANSACTION NOT RECOGNIZED";
+
+                renderCommand();
+
+                return;
+            }
+
+
+            if (
+                event.key.length === 1 &&
+                !event.ctrlKey &&
+                !event.altKey &&
+                !event.metaKey &&
+                command.length < 8
+            ) {
+
+                command +=
+                    event.key.toUpperCase();
+
+                commandError = "";
+
+                renderCommand();
+            }
+        }
+
+
         terminal.addEventListener(
             "keydown",
             commandKeyboard
@@ -360,6 +315,7 @@ ${error
         renderCommand();
     }
 
+
     terminal.addEventListener(
         "keydown",
         keyboard
@@ -367,6 +323,7 @@ ${error
 
     render();
 }
+
 
 function escapeHTML(value = "") {
 
